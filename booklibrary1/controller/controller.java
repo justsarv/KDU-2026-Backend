@@ -2,9 +2,14 @@ package com.example.booklibrary1.controller;
 
 import com.example.booklibrary1.model.model;
 import com.example.booklibrary1.service.bookService;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.hateoas.CollectionModel;
+import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.Link;
+import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 
 import java.net.URI;
 import java.util.List;
@@ -14,10 +19,17 @@ public class controller {
 
         bookService service=new bookService();
         @GetMapping("/books")
-        public ResponseEntity returnBooks(){
-            List<model> bookList= service.getAll();
-            return new ResponseEntity(bookList,HttpStatus.OK);
+        public ResponseEntity returnBooks(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue="3") int pageSize){
+//            List<model> bookList= service.getAll();
+            Page<model> ListofPageable=service.getAll(page,pageSize);
+            return new ResponseEntity(ListofPageable,HttpStatus.OK);
         }
+
+        @GetMapping("/books/hateoas")
+        public EntityModel<model>  getBooks(){
+
+        }
+
 
         @PostMapping("/books")
         public ResponseEntity addBook(@RequestBody model book){

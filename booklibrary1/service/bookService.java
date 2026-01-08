@@ -1,6 +1,11 @@
 package com.example.booklibrary1.service;
 
 
+import org.springframework.data.domain.PageImpl;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import com.example.booklibrary1.model.model;
 
 import java.util.ArrayList;
@@ -20,9 +25,9 @@ public class bookService {
             new model(1010L, "Domain-Driven Design", "Eric Evans")
     ));
 
-    public List<model> getAll(){
-        return books;
-    }
+//    public List<model> getAll(){
+//        return books;
+//    }
 
     public model addBook(model book){
         try{
@@ -35,6 +40,17 @@ public class bookService {
 
     }
 
+    public Page<model> getAll(int pageNumber,int pageSize){
+        Pageable page=PageRequest.of(pageNumber, pageSize);
+        int start=(int)page.getOffset();
+       int end=Math.min(start+pageSize,books.size());
+       List<model>pageContent;
+       if(start>=books.size()) pageContent=List.of();
+       else {
+           pageContent=books.subList(start,end);
+       }
+       return new PageImpl<>(pageContent,page,books.size());
+    }
 
     public model updateBook(model book,long id){
         for(model booksL: books){
